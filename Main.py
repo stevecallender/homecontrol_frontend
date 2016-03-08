@@ -6,60 +6,50 @@ from thread import *
 from Queue import *
 import time
 
-#add in the zmq control
-
-
 
 class HomeControl(Tk):
 
-    def playPressed(self):
-        print "play pressed"
-        self.outboundMessageQueue.put("pause")
+    def playTogglePressed(self):
+        if (self.playing):
+            self.outboundMessageQueue.put("pause")
+        else:
+            self.outboundMessageQueue.put("play")
 
     def pausePressed(self):
-        print "pause pressed"
         self.outboundMessageQueue.put("play")
 
     def nextPressed(self):
-        print "next pressed"
         self.outboundMessageQueue.put("next")
 
     def previousPressed(self):
-        print "prev pressed"
         self.outboundMessageQueue.put("prev")
 
-    def lightsOnPressed(self):
-        self.outboundMessageQueue.put("lightsOn")
+    def lightTogglePressed(self):
+        if self.lightsOn:
+            self.outboundMessageQueue.put("lightsOff")
+        else:
+            self.outboundMessageQueue.put("lightsOn")
 
-    def lightsOffPressed(self):
-        self.outboundMessageQueue.put("lightsOff")
 
     def monitorOutBound(self,context):
 
-        socketOut = context.socket(zmq.REQ)
+        socketOut = context.socket(zmq.PUSH)
         socketOut.connect("tcp://192.168.1.1:5555")
 
         while True:
             outMessage = self.outboundMessageQueue.get()
-            print "sending msg"
+            print "Pushing message " + outMessage
             socketOut.send(outMessage)
-            print "pending call back"
-            callback = socketOut.recv()
-            print "received reply"
-            print callback
 
     def monitorInBound(self,context):
 
-        socketIn = context.socket(zmq.REP)
+        socketIn = context.socket(zmq.PULL)
         socketIn.bind("tcp://*:5556")
 
         while True:
             inMessage = socketIn.recv()
-            print "request received"
-            print inMessage
+            print "Message pulled: " +inMessage
             self.inboundMessageQueue.put(inMessage)
-            print "sending callback"
-            socketIn.send("1")
 
 
 
@@ -72,7 +62,40 @@ class HomeControl(Tk):
 
     def handleRequest(self, message):
         #in future this will expand to check on header date (maybe proto buffs)
-        self.songText.set(message)
+        header = message[0]
+        payload = message[1:]
+
+        #current song info - 1
+        if (header == "1"):
+            self.songText.set(payload[:-1])#removing last char as it is new line
+
+        #lights state - 2
+        elif (header == "2"):
+            if (payload == "lightsOn"):
+                self.lightsButton.config(image=self.lightOnImage,width="270",height="270")
+                self.lightsOn = True
+            elif (payload == "lightsOff"):
+                self.lightsButton.config(image=self.lightOffImage,width="270",height="270")
+                self.lightsOn = False
+        #play state
+        elif (header == "3"):
+            if (payload == "play"):
+                self.playPauseButton.config(image=self.pauseImage,width="270",height="270")
+                self.playing = True
+            elif (payload == "pause"):
+                self.playPauseButton.config(image=self.playImage,width="270",height="270")
+                self.playing = False
+
+        #time
+        elif (header == "4"):
+            splitTime = payload.split(":")
+            hours = splitTime[0]
+            minutes = splitTime[1]
+            if len(minutes) < 2:
+                minutes = "0"+minutes
+            if len(hours) < 2:
+                hours = "0"+hours
+            self.timeText.set(hours+":"+minutes)
 
     def updateCurrentSong(self,song):
         self.songLabel = song
@@ -81,6 +104,8 @@ class HomeControl(Tk):
         Tk.__init__(self,parent)
         self.parent = parent
 
+        self.lightsOn = False
+        self.playing = False
 
         self.outboundMessageQueue = Queue()
         self.inboundMessageQueue = Queue()
@@ -95,30 +120,32 @@ class HomeControl(Tk):
         self.grid()
 
         self.songText = StringVar()
-        self.songLabel = Label(self, textvariable=self.songText)
+        self.songLabel = Label(self, textvariable=self.songText, font=("Helvetica", 36))
 
-        self.playButton = Button(self,command=self.playPressed)
-        self.pauseButton = Button(self,command=self.pausePressed)
+        self.timeText = StringVar()
+        self.timeLabel = Label(self, textvariable=self.timeText, font=("Helvetica", 36))
+
+        self.playPauseButton = Button(self,command=self.playTogglePressed)
         self.nextButton = Button(self,command=self.nextPressed)
         self.previousButton = Button(self,command=self.previousPressed)
-        self.lightsOnButton = Button(self,command=self.lightsOnPressed)
-        self.lightsOffButton = Button(self,command=self.lightsOffPressed)
+        self.lightsButton = Button(self,command=self.lightTogglePressed)
 
-        self.playButton.config(image=self.pauseImage,width="270",height="270")
-        self.pauseButton.config(image=self.playImage,width="270",height="270")
+        self.playPauseButton.config(image=self.playImage,width="270",height="270")
         self.nextButton.config(image=self.nextImage,width="270",height="270")
         self.previousButton.config(image=self.previousImage,width="270",height="270")
-        self.lightsOnButton.config(image=self.lightOnImage,width="270",height="270")
-        self.lightsOffButton.config(image=self.lightOffImage,width="270",height="270")
+        self.lightsButton.config(image=self.lightOffImage,width="270",height="270")
 
 
-        self.songLabel.grid(column=1,row=0,sticky='EW')
-        self.playButton.grid(column=1,row=1,sticky='EW')
-        self.pauseButton.grid(column=2,row=1,sticky='EW')
-        self.nextButton.grid(column=3,row=1,sticky='EW')
+
+        self.songLabel.grid(column=0,row=0,sticky='WNS',columnspan = 3)
+        self.timeLabel.grid(column=3,row=0,sticky='E')
+
         self.previousButton.grid(column=0,row=1,sticky='EW')
-        self.lightsOnButton.grid(column=0,row=2,sticky='EW')
-        self.lightsOffButton.grid(column=3,row=2,sticky='EW')
+        self.playPauseButton.grid(column=1,row=1,sticky='EW')
+        self.nextButton.grid(column=2,row=1,sticky='EW')
+
+        self.lightsButton.grid(column=3,row=1,sticky='EW')
+
 
 
         context = zmq.Context()
