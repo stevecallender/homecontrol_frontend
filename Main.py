@@ -114,7 +114,9 @@ class HomeControl(Tk):
         self.inboundMessageQueue = Queue()
 
         self.pauseImage=PhotoImage(file="pause.gif").subsample(2,2)
+
         self.playImage=PhotoImage(file="play.gif").subsample(2,2)
+
         self.nextImage=PhotoImage(file="next.gif").subsample(2,2)
         self.previousImage=PhotoImage(file="previous.gif").subsample(2,2)
         self.lightOnImage=PhotoImage(file="lightson.gif").subsample(2,2)
@@ -123,13 +125,14 @@ class HomeControl(Tk):
         self.grid()
 
         self.songText = StringVar()
-        self.songLabel = Label(self, textvariable=self.songText, font=("Helvetica", 36))
+        self.songLabel = Label(self, textvariable=self.songText, font=("Helvetica", 28))
 
         self.artistText = StringVar()
-        self.artistLabel = Label(self, textvariable=self.artistText, font=("Helvetica", 36))
+        self.artistLabel = Label(self, textvariable=self.artistText, font=("Helvetica", 28))
 
         self.timeText = StringVar()
-        self.timeLabel = Label(self, textvariable=self.timeText, font=("Helvetica", 36))
+        self.timeLabel = Label(self, textvariable=self.timeText, font=("Helvetica", 28))
+
 
         self.playPauseButton = Button(self,command=self.playTogglePressed)
         self.nextButton = Button(self,command=self.nextPressed)
@@ -158,9 +161,12 @@ class HomeControl(Tk):
         start_new_thread(self.monitorInBound, (context,))
 
 
+
+
 if __name__ == "__main__":
     app = HomeControl(None)
     app.title('my application')
+
     app.after(0,app.monitorBackend)
     app.mainloop()
 
