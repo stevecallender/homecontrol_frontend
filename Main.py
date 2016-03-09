@@ -125,10 +125,10 @@ class HomeControl(Tk):
         self.grid()
 
         self.songText = StringVar()
-        self.songLabel = Label(self, textvariable=self.songText, font=("Helvetica", 28))
+        self.songLabel = Label(self, textvariable=self.songText, font=("Helvetica", 24))
 
         self.artistText = StringVar()
-        self.artistLabel = Label(self, textvariable=self.artistText, font=("Helvetica", 28))
+        self.artistLabel = Label(self, textvariable=self.artistText, font=("Helvetica", 24))
 
         self.timeText = StringVar()
         self.timeLabel = Label(self, textvariable=self.timeText, font=("Helvetica", 24))
@@ -142,7 +142,7 @@ class HomeControl(Tk):
         self.playPauseButton.config(image=self.playImage,width="255",height="180")
         self.nextButton.config(image=self.nextImage,width="255",height="180")
         self.previousButton.config(image=self.previousImage,width="255",height="180")
-        self.lightsButton.config(image=self.lightOffImage,width="766",height="160")
+        self.lightsButton.config(image=self.lightOffImage,width="350",height="170")
 
 
         self.songLabel.grid(column=0,row=0,sticky='WNS',columnspan = 2)
