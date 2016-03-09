@@ -133,10 +133,10 @@ class HomeControl(Tk):
         self.previousButton = Button(self,command=self.previousPressed)
         self.lightsButton = Button(self,command=self.lightTogglePressed)
 
-        self.playPauseButton.config(image=self.playImage,width="200",height="200")
-        self.nextButton.config(image=self.nextImage,width="200",height="200")
-        self.previousButton.config(image=self.previousImage,width="200",height="200")
-        self.lightsButton.config(image=self.lightOffImage,width="200",height="100")
+        self.playPauseButton.config(image=self.playImage,width="266",height="200")
+        self.nextButton.config(image=self.nextImage,width="266",height="200")
+        self.previousButton.config(image=self.previousImage,width="266",height="200")
+        self.lightsButton.config(image=self.lightOffImage,width="799",height="100")
 
 
         self.songLabel.grid(column=0,row=0,sticky='WNS',columnspan = 2)
@@ -148,8 +148,6 @@ class HomeControl(Tk):
         self.nextButton.grid(column=2,row=2,sticky='EW')
 
         self.lightsButton.grid(column=0,row=3,sticky='EW',columnspan = 3)
-
-
 
         context = zmq.Context()
 
