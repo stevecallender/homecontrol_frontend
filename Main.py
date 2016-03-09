@@ -67,23 +67,26 @@ class HomeControl(Tk):
 
         #current song info - 1
         if (header == "1"):
-            self.songText.set(payload[:-1])#removing last char as it is new line
+            trimmedPayload = payload[:-1]
+            artist,song = trimmedPayload.split("-")
+            self.songText.set(song[1:])#removing last char as it is new line
+            self.artistText.set(artist)#removing last char as it is new line
 
         #lights state - 2
         elif (header == "2"):
             if (payload == "lightsOn"):
-                self.lightsButton.config(image=self.lightOnImage,width="200",height="200")
+                self.lightsButton.config(image=self.lightOnImage,width="200",height="140")
                 self.lightsOn = True
             elif (payload == "lightsOff"):
-                self.lightsButton.config(image=self.lightOffImage,width="200",height="200")
+                self.lightsButton.config(image=self.lightOffImage,width="200",height="140")
                 self.lightsOn = False
         #play state
         elif (header == "3"):
             if (payload == "play"):
-                self.playPauseButton.config(image=self.pauseImage,width="200",height="200")
+                self.playPauseButton.config(image=self.pauseImage,width="266",height="180")
                 self.playing = True
             elif (payload == "pause"):
-                self.playPauseButton.config(image=self.playImage,width="200",height="200")
+                self.playPauseButton.config(image=self.playImage,width="266",height="180")
                 self.playing = False
 
         #time
@@ -133,15 +136,15 @@ class HomeControl(Tk):
         self.previousButton = Button(self,command=self.previousPressed)
         self.lightsButton = Button(self,command=self.lightTogglePressed)
 
-        self.playPauseButton.config(image=self.playImage,width="266",height="200")
-        self.nextButton.config(image=self.nextImage,width="266",height="200")
-        self.previousButton.config(image=self.previousImage,width="266",height="200")
-        self.lightsButton.config(image=self.lightOffImage,width="799",height="100")
+        self.playPauseButton.config(image=self.playImage,width="266",height="180")
+        self.nextButton.config(image=self.nextImage,width="266",height="180")
+        self.previousButton.config(image=self.previousImage,width="266",height="180")
+        self.lightsButton.config(image=self.lightOffImage,width="799",height="140")
 
 
         self.songLabel.grid(column=0,row=0,sticky='WNS',columnspan = 2)
         self.artistLabel.grid(column=0,row=1,sticky='WNS',columnspan = 2)
-        self.timeLabel.grid(column=2,row=0,sticky='E')
+        self.timeLabel.grid(column=2,row=0,sticky='E',rowspan = 2)
 
         self.previousButton.grid(column=0,row=2,sticky='EW')
         self.playPauseButton.grid(column=1,row=2,sticky='EW')
