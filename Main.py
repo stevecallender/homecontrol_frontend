@@ -139,10 +139,10 @@ class HomeControl(Tk):
         self.previousButton = Button(self,command=self.previousPressed)
         self.lightsButton = Button(self,command=self.lightTogglePressed)
 
-        self.playPauseButton.config(image=self.playImage,width="250",height="180")
-        self.nextButton.config(image=self.nextImage,width="250",height="180")
-        self.previousButton.config(image=self.previousImage,width="250",height="180")
-        self.lightsButton.config(image=self.lightOffImage,width="750",height="140")
+        self.playPauseButton.config(image=self.playImage,width="255",height="180")
+        self.nextButton.config(image=self.nextImage,width="255",height="180")
+        self.previousButton.config(image=self.previousImage,width="255",height="180")
+        self.lightsButton.config(image=self.lightOffImage,width="766",height="160")
 
 
         self.songLabel.grid(column=0,row=0,sticky='WNS',columnspan = 2)
